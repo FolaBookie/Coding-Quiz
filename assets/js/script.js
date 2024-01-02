@@ -1,3 +1,6 @@
+let questionIndex = 0;
+let timer;
+
 //Creating an array of the quiz questions
 var questionsArray = [
   {
@@ -43,6 +46,87 @@ var questionsArray = [
     answer: "onclick",
   },
 ];
+
+function startTimer() {
+  const timerEl = document.getElementById("time");
+  if (timer) {
+    clearInterval(timer);
+  }
+  let remainingTime = 60;
+  timerEl.innerText = remainingTime;
+  timer = setInterval(function () {
+    remainingTime--;
+    timerEl.innerText = remainingTime;
+  }, 1000);
+}
+
+function checkAnswer() {
+  const allOptions = document.getElementsByName("answerOptions");
+  let userAnswer;
+  for (let i = 0; i < allOptions.length; i++) {
+    if (allOptions[i].checked) {
+      userAnswer = allOptions[i].value;
+      break;
+    }
+  }
+  const currentQuestion = questionsArray[questionIndex];
+  const isUserCorrect = userAnswer === currentQuestion.answer;
+  const displayUserResult = document.createElement("p");
+  if (isUserCorrect) {
+    const questionSection = document.getElementById("questions");
+    displayUserResult.innerText = "Correct!";
+    questionSection.append(displayUserResult);
+  }
+}
+
+function generateOptions(options) {
+  const optionsContainer = document.createElement("div");
+  options.forEach(function (option, index) {
+    const optionId = option.split(" ").join("-") + index;
+    const optionBox = document.createElement("div");
+    optionBox.classList.add("form-check");
+
+    const optionInput = document.createElement("input");
+    optionInput.classList.add("form-check-input");
+    optionInput.setAttribute("type", "radio");
+    optionInput.setAttribute("name", "answerOptions");
+    optionInput.setAttribute("value", option);
+    optionInput.onchange = checkAnswer;
+    optionInput.id = optionId;
+
+    const optionLabel = document.createElement("label");
+    optionLabel.classList.add("form-check-label");
+    optionLabel.setAttribute("for", optionId);
+    optionLabel.innerText = option;
+
+    optionBox.append(optionInput);
+    optionBox.append(optionLabel);
+    optionsContainer.append(optionBox);
+  });
+  return optionsContainer;
+}
+
+function getQuestion() {
+  const question = questionsArray[questionIndex];
+  const questionSection = document.getElementById("questions");
+  questionSection.classList.remove("hide");
+  const questionTitle = document.getElementById("question-title");
+  questionTitle.innerText = question.question;
+  const options = generateOptions(question.options);
+  questionSection.append(options);
+}
+
+function init() {
+  const startButton = document.getElementById("start");
+  startButton.addEventListener("click", function () {
+    const startScreen = document.getElementById("start-screen");
+    startScreen.classList.add("hide");
+    getQuestion();
+    startTimer();
+  });
+}
+init();
+
 // Each question needs the following:
 // Question text
 // Set of answers
