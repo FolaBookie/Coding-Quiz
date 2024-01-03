@@ -1,6 +1,14 @@
 let questionIndex = 0;
 let timer;
-
+let remainingTime = 60;
+let userScore = 0;
+const questionSection = document.getElementById("questions");
+const questionTitle = document.getElementById("question-title");
+const optionsContainer = document.getElementById("choices");
+const endScreen = document.getElementById("end-screen");
+const finalScore = document.getElementById("final-score");
+const initialsInput = document.getElementById("initials");
+const submitBtn = document.getElementById("submit");
 //Creating an array of the quiz questions
 var questionsArray = [
   {
@@ -52,9 +60,12 @@ function startTimer() {
   if (timer) {
     clearInterval(timer);
   }
-  let remainingTime = 60;
   timerEl.innerText = remainingTime;
   timer = setInterval(function () {
+    if (remainingTime <= 0) {
+      clearInterval(timer);
+      return;
+    }
     remainingTime--;
     timerEl.innerText = remainingTime;
   }, 1000);
@@ -73,14 +84,37 @@ function checkAnswer() {
   const isUserCorrect = userAnswer === currentQuestion.answer;
   const displayUserResult = document.createElement("p");
   if (isUserCorrect) {
-    const questionSection = document.getElementById("questions");
     displayUserResult.innerText = "Correct!";
-    questionSection.append(displayUserResult);
+    userScore++;
+  } else {
+    displayUserResult.innerText = "Wrong!";
+    remainingTime -= 2;
   }
+  questionSection.append(displayUserResult);
+  setTimeout(function () {
+    if (questionIndex === questionsArray.length - 1) {
+      stopQuestion();
+    } else {
+      nextQuestion();
+    }
+    displayUserResult.remove();
+  }, 2000);
+}
+
+function nextQuestion() {
+  questionIndex++;
+  getQuestion();
+}
+
+function stopQuestion() {
+  clearInterval(timer);
+  questionSection.classList.add("hide");
+  endScreen.classList.remove("hide");
+  finalScore.innerText = userScore;
 }
 
 function generateOptions(options) {
-  const optionsContainer = document.createElement("div");
+  optionsContainer.innerHTML = "";
   options.forEach(function (option, index) {
     const optionId = option.split(" ").join("-") + index;
     const optionBox = document.createElement("div");
@@ -103,24 +137,33 @@ function generateOptions(options) {
     optionBox.append(optionLabel);
     optionsContainer.append(optionBox);
   });
-  return optionsContainer;
 }
 
 function getQuestion() {
   const question = questionsArray[questionIndex];
-  const questionSection = document.getElementById("questions");
-  questionSection.classList.remove("hide");
-  const questionTitle = document.getElementById("question-title");
   questionTitle.innerText = question.question;
-  const options = generateOptions(question.options);
-  questionSection.append(options);
+  generateOptions(question.options);
 }
+
+submitBtn.addEventListener("click", function () {
+  const userInitials = initialsInput.value;
+  if (userInitials.trim()) {
+    let allUserSCores = JSON.parse(localStorage.getItem("highscores"));
+    if (!allUserSCores) {
+      allUserSCores = [];
+    }
+    allUserSCores.push({ initials: userInitials, score: userScore });
+    localStorage.setItem("highscores", JSON.stringify(allUserSCores));
+    window.location.href = "highscores.html";
+  }
+});
 
 function init() {
   const startButton = document.getElementById("start");
   startButton.addEventListener("click", function () {
     const startScreen = document.getElementById("start-screen");
     startScreen.classList.add("hide");
+    questionSection.classList.remove("hide");
     getQuestion();
     startTimer();
   });
