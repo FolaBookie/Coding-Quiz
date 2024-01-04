@@ -145,6 +145,7 @@ function getQuestion() {
   generateOptions(question.options);
 }
 
+// Initials and score get stored in local storage
 submitBtn.addEventListener("click", function () {
   const userInitials = initialsInput.value;
   if (userInitials.trim()) {
@@ -154,6 +155,7 @@ submitBtn.addEventListener("click", function () {
     }
     allUserSCores.push({ initials: userInitials, score: userScore });
     localStorage.setItem("highscores", JSON.stringify(allUserSCores));
+    initialsInput.value = "";
     window.location.href = "highscores.html";
   }
 });
@@ -199,7 +201,6 @@ init();
 // Display their score
 
 // User submits form
-// Initials and score get stored in local storage
 // User is taken to the high scores page
 // High scores are listed, sorted highest to lowest
 // User has option to take the quiz again
