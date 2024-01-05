@@ -6,9 +6,10 @@ const clearScoresButton = document.getElementById("clear");
 function getHighscores() {
   const highScores = JSON.parse(localStorage.getItem("highscores"));
   if (highScores) {
-    highScores.forEach(function (score) {
+    highScores.forEach(function (score, index) {
+    const scoreIndex = index + 1 
       const scoreItem = document.createElement("li");
-      scoreItem.innerText = score.initials + "-" + score.score;
+      scoreItem.innerText = scoreIndex + ". " + score.initials + " - " + score.score;
       scoresList.append(scoreItem);
     });
   }

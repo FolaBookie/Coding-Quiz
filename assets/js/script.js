@@ -9,6 +9,7 @@ const endScreen = document.getElementById("end-screen");
 const finalScore = document.getElementById("final-score");
 const initialsInput = document.getElementById("initials");
 const submitBtn = document.getElementById("submit");
+
 //Creating an array of the quiz questions
 var questionsArray = [
   {
@@ -55,6 +56,7 @@ var questionsArray = [
   },
 ];
 
+// Function to start the quiz
 function startTimer() {
   const timerEl = document.getElementById("time");
   if (timer) {
@@ -71,18 +73,19 @@ function startTimer() {
   }, 1000);
 }
 
+// Creating a function to check if answer is correct
 function checkAnswer() {
   const allOptions = document.getElementsByName("answerOptions");
   let userAnswer;
   for (let i = 0; i < allOptions.length; i++) {
     if (allOptions[i].checked) {
       userAnswer = allOptions[i].value;
-      break;
     }
+    allOptions[i].setAttribute("disabled", "true");
   }
   const currentQuestion = questionsArray[questionIndex];
   const isUserCorrect = userAnswer === currentQuestion.answer;
-  const displayUserResult = document.createElement("p");
+  const displayUserResult = document.createElement("em");
   if (isUserCorrect) {
     displayUserResult.innerText = "Correct!";
     userScore++;
@@ -122,6 +125,7 @@ function generateOptions(options) {
 
     const optionInput = document.createElement("input");
     optionInput.classList.add("form-check-input");
+    optionInput.classList.add("hide");
     optionInput.setAttribute("type", "radio");
     optionInput.setAttribute("name", "answerOptions");
     optionInput.setAttribute("value", option);
@@ -139,6 +143,7 @@ function generateOptions(options) {
   });
 }
 
+//Creating a function to get quiz questions
 function getQuestion() {
   const question = questionsArray[questionIndex];
   questionTitle.innerText = question.question;
@@ -160,6 +165,7 @@ submitBtn.addEventListener("click", function () {
   }
 });
 
+// Creating an event
 function init() {
   const startButton = document.getElementById("start");
   startButton.addEventListener("click", function () {
@@ -171,36 +177,3 @@ function init() {
   });
 }
 init();
-
-// Each question needs the following:
-// Question text
-// Set of answers
-// Which answer is correct
-
-// Landing page:
-// Explanation of the quiz
-// Start button
-
-// Click the start button:
-// Landing page goes away
-// Timer starts
-// The first question appears (with its answers)
-
-// For each question:
-// User clicks an answer
-// Their choice is compared to the correct answer as stored in the question's object
-// If correct, tell them
-// If incorrect, tell them AND subtract time from the timer
-// Optional: play a sound for correct or incorrect
-// Either way, the question disappears after a few seconds and the next question appears
-
-// After the last question:
-// Timer stops
-// Question disappears
-// Form appears for user to enter their initials
-// Display their score
-
-// User submits form
-// User is taken to the high scores page
-// High scores are listed, sorted highest to lowest
-// User has option to take the quiz again
